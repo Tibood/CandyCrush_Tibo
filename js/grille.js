@@ -189,7 +189,13 @@ export default class Grille {
             if (tabCookiesSameType.length > 0 && this.tabcookies[l][colonne].type === tabCookiesSameType[0].type) {
                 tabCookiesSameType.push(this.tabcookies[l][colonne]);
                 if ((l === this.c - 1 || this.tabcookies[l+1][colonne].type !== tabCookiesSameType[0].type) && tabCookiesSameType.length >= 3) {
-                    tabCookiesSameType.forEach(c => c.htmlImage.classList.add("cookieCachee"));
+                    tabCookiesSameType.forEach(c => {// c.htmlImage.classList.add("clignote");
+                    // setTimeout(() => {
+                    //     c.htmlImage.classList.remove("clignote");
+                    //     c.cache();
+                    // }, 1500);
+                        c.cache();
+                    });
                     let score = tabCookiesSameType.length - 2;
                     this.setScore(score);
                     alignement = true;

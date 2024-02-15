@@ -216,7 +216,6 @@ export default class Grille {
                         k++;
                     }
                     if (k < this.l) {
-                        // Avant de déplacer le cookie, on log son déplacement
                         console.log(`Le cookie à la position ( ${k}, à la colonne ${c}) descend à la position (ligne ${l}, colonne ${c}).`);
                         this.tabcookies[l][c] = this.tabcookies[k][c];
                         this.tabcookies[k][c] = new Cookie(Math.floor(Math.random() * 6), k, c);
@@ -226,9 +225,8 @@ export default class Grille {
             }
             for (let l = 0; l < this.l; l++) {
                 if (this.tabcookies[l][c].isCache()) {
-                    const type = Math.floor(Math.random() * 6); // Supposons 6 types de cookies
+                    const type = Math.floor(Math.random() * 6);
                     this.tabcookies[l][c] = new Cookie(type, l, c);
-                    // On pourrait également ajouter un log ici si on veut indiquer le remplissage de cookies
                     console.log(`Un nouveau cookie de type ${type} est créé à la position (${l}, ${c}).`);
                 }
             }

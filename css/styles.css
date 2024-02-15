@@ -67,7 +67,16 @@ img {
 }
 
 .cookieCachee {
-    border: 3px solid;
-    border-color: red;
-    /* display: none; */
+    /* border: 3px solid;
+    border-color: red; */
+    display: none;
+}
+
+@keyframes clignotement {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.clignote {
+    animation: clignotement 0.5s linear 3; /* 3 répétitions, chaque clignotement dure 0.5 seconde */
 }

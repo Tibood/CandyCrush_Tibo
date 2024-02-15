@@ -17,10 +17,9 @@ export default class Grille {
         do {
             this.tabcookies = this.remplirTableauDeCookies(6)
             existeAlignement = this.testAlignementDansTouteLaGrille();
-            console.log("ExisteAlignement : " + existeAlignement)
             this.faireTomberEtRemplirCookies();
+            existeAlignement = this.testAlignementDansTouteLaGrille();
         } while(existeAlignement)
-        console.log("ExisteAlignement : " + existeAlignement)
     }
 
 
@@ -31,6 +30,8 @@ export default class Grille {
      * et implémenter la logique du jeu.
      */
     showCookies() {
+        let scoreDiv = document.getElementById("score");
+        scoreDiv.textContent = "0";
         let caseDivs = document.querySelectorAll("#grille div");
         let selectedCookies = []
 
@@ -65,6 +66,10 @@ export default class Grille {
                     } else {
                         if (Cookie.distance(selectedCookies[0], cookie) === 1) {
                             Cookie.swapCookies(selectedCookies[0], cookie);
+                            if (this.testAlignementDansTouteLaGrille() !== true) {
+                                Cookie.swapCookies(cookie, selectedCookies[0]);
+                            }
+                            this.faireTomberEtRemplirCookies();
                             selectedCookies = [];
                         } else {
                             selectedCookies[0].deselectionnee();
@@ -128,11 +133,11 @@ export default class Grille {
     }
 
     testAlignementToutesLesLignes() {
-        let alignementLignes = false;
         for (let i = 0; i < this.l; i++) {
-            alignementLignes = this.testAlignementLigne(i);
+            if (this.testAlignementLigne(i)) {
+                return true;
+            }
         }
-        return alignementLignes;
     }
 
     testAlignementLigne(ligne) {
@@ -144,7 +149,14 @@ export default class Grille {
                 tabCookiesSameType.push(tabLigne[i]);
                 if (tabCookiesSameType.length >= 3) {
                     if (i === tabLigne.length - 1 || tabLigne[i + 1].type !== tabCookiesSameType[0].type) {
-                        tabCookiesSameType.forEach(c => c.cache());
+                        tabCookiesSameType.forEach(c => {
+                            // c.htmlImage.classList.add("clignote");
+                            // setTimeout(() => {
+                            //     c.htmlImage.classList.remove("clignote");
+                            //     c.cache();
+                            // }, 1500);
+                            c.cache();
+                        });
                         let score = tabCookiesSameType.length-2;
                         this.setScore(score);
                         alignement = true;
@@ -159,26 +171,25 @@ export default class Grille {
     }
 
     testAlignementToutesLesColonnes() {
-        let alignementColonnes = false;
         for (let i = 0; i < this.c; i++) {
-            alignementColonnes = this.testAlignementColonne(i);
+            if (this.testAlignementColonne(i)) {
+                return true;
+            }
         }
-        return alignementColonnes;
     }
 
     testAlignementColonne(colonne) {
         let alignement = false;
         let tabCookiesSameType = [];
-        for (let l = 0; l < this.c; l++) { // Correction : boucle jusqu'à this.c
+        for (let l = 0; l < this.c; l++) {
             if (tabCookiesSameType.length > 0 && this.tabcookies[l][colonne].type === tabCookiesSameType[0].type) {
                 tabCookiesSameType.push(this.tabcookies[l][colonne]);
-                // Vérifier la condition à la fin de la colonne ou si le prochain cookie est de type différent
                 if ((l === this.c - 1 || this.tabcookies[l+1][colonne].type !== tabCookiesSameType[0].type) && tabCookiesSameType.length >= 3) {
                     tabCookiesSameType.forEach(c => c.htmlImage.classList.add("cookieCachee"));
                     let score = tabCookiesSameType.length - 2;
                     this.setScore(score);
                     alignement = true;
-                    tabCookiesSameType = []; // Réinitialiser pour la prochaine recherche
+                    tabCookiesSameType = [];
                 }
             } else {
                 tabCookiesSameType = [this.tabcookies[l][colonne]];
@@ -192,16 +203,21 @@ export default class Grille {
         let scoreActuel = scoreDiv.textContent;
         scoreDiv.innerHTML = parseInt(scoreActuel,10) + score;
     }
-//htmlImage.classList.add("cookieCachee")
+
     faireTomberEtRemplirCookies() {
         for (let c = 0; c < this.c; c++) {
+            console.log("Colonne " + c);
             for (let l = 0; l < this.l; l++) {
+                console.log("Ligne " + l);
                 if (this.tabcookies[l][c].isCache()) {
+                    console.log("Cookie caché trouvé à la ligne " + l + " et la colonne " + c + ". On va le faire tomber.");
                     let k = l + 1;
                     while (k < this.l && this.tabcookies[k][c].isCache()) {
                         k++;
                     }
                     if (k < this.l) {
+                        // Avant de déplacer le cookie, on log son déplacement
+                        console.log(`Le cookie à la position ( ${k}, à la colonne ${c}) descend à la position (ligne ${l}, colonne ${c}).`);
                         this.tabcookies[l][c] = this.tabcookies[k][c];
                         this.tabcookies[k][c] = new Cookie(Math.floor(Math.random() * 6), k, c);
                         this.tabcookies[l][c].ligne = l;
@@ -212,6 +228,8 @@ export default class Grille {
                 if (this.tabcookies[l][c].isCache()) {
                     const type = Math.floor(Math.random() * 6); // Supposons 6 types de cookies
                     this.tabcookies[l][c] = new Cookie(type, l, c);
+                    // On pourrait également ajouter un log ici si on veut indiquer le remplissage de cookies
+                    console.log(`Un nouveau cookie de type ${type} est créé à la position (${l}, ${c}).`);
                 }
             }
         }
@@ -229,7 +247,6 @@ export default class Grille {
         return this.getCookieFromLC(l, c);
     }
 
-    // inutile ?
     getCookieFromLC(ligne, colonne) {
         return this.tabcookies[ligne][colonne];
     }

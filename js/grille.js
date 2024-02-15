@@ -112,6 +112,10 @@ export default class Grille {
                 let cookie2 = this.getCookieFromImage(img);
                 if (Cookie.distance(cookie1, cookie2) === 1) {
                     Cookie.swapCookies(cookie1, cookie2);
+                    if (this.testAlignementDansTouteLaGrille() !== true) {
+                        Cookie.swapCookies(cookie2, cookie1);
+                    }
+                    this.faireTomberEtRemplirCookies();
                     selectedCookies = [];
                 } else {
                     cookie1.deselectionnee();
